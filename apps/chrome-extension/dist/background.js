@@ -1,0 +1,1 @@
+"use strict";(()=>{chrome.commands.onCommand.addListener(async e=>{if(e==="toggle-fps"){let[t]=await chrome.tabs.query({active:!0,currentWindow:!0});if(!t.id)return;try{await chrome.tabs.sendMessage(t.id,{action:"toggle"})}catch{await chrome.scripting.executeScript({target:{tabId:t.id},files:["content.js"]}),await chrome.tabs.sendMessage(t.id,{action:"toggle"})}}});})();

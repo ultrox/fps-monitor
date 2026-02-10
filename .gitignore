@@ -1,4 +1,7 @@
 node_modules/
-dist/
+/dist/
 .DS_Store
 *.log
+
+# Allow chrome extension dist
+!apps/chrome-extension/dist/
