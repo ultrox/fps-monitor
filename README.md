@@ -134,6 +134,27 @@ Creates and mounts the FPS monitor.
 - Uses CSS variables for colors (reads at render time)
 - Data attributes drive all visual state changes
 
+### Why a ring buffer?
+
+A performance monitor shouldn't tank your performance. The ring buffer is a fixed-size array (120 slots) that wraps around:
+
+```
+Frame 1:   write at index 0
+Frame 2:   write at index 1
+...
+Frame 120: write at index 119
+Frame 121: write at index 0 (overwrites oldest)
+```
+
+**No allocations.** No `.push()`, no `.shift()`, no array resizing. Just:
+
+```ts
+buffer[index] = delta;
+index = (index + 1) % 120;
+```
+
+O(1) writes, zero GC pressure. At 60fps that's 60 potential allocation sites per second eliminated. The monitor stays invisible to the metrics it's measuring.
+
 ## License
 
 MIT
