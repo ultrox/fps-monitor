@@ -1,0 +1,219 @@
+/**
+ * FPS Monitor Styles
+ * 
+ * Customize via CSS variables:
+ * --fps-color-good, --fps-color-warn, --fps-color-bad
+ * --fps-graph-width, --fps-graph-height
+ * --fps-font-family, --fps-bg, --fps-border-radius
+ */
+
+.fps-monitor {
+  /* Configurable */
+  --fps-color-good: #22c55e;
+  --fps-color-warn: #eab308;
+  --fps-color-bad: #ef4444;
+  --fps-graph-width: 280px;
+  --fps-graph-height: 80px;
+  --fps-font-family: 'JetBrains Mono', 'SF Mono', 'Fira Code', 'Cascadia Code', monospace;
+  --fps-bg: rgba(15, 23, 42, 0.92);
+  --fps-border-radius: 10px;
+  
+  /* Internal */
+  --fps-current-color: var(--fps-color-good);
+  
+  position: fixed;
+  z-index: 999999;
+  font-family: var(--fps-font-family);
+  font-size: 11px;
+  color: #e2e8f0;
+  user-select: none;
+}
+
+/* Positions */
+.fps-monitor[data-position="top-right"] { top: 12px; right: 12px; }
+.fps-monitor[data-position="top-left"] { top: 12px; left: 12px; }
+.fps-monitor[data-position="bottom-right"] { bottom: 12px; right: 12px; }
+.fps-monitor[data-position="bottom-left"] { bottom: 12px; left: 12px; }
+
+/* Classification colors */
+.fps-monitor[data-status="good"] { --fps-current-color: var(--fps-color-good); }
+.fps-monitor[data-status="warn"] { --fps-current-color: var(--fps-color-warn); }
+.fps-monitor[data-status="bad"] { --fps-current-color: var(--fps-color-bad); }
+
+/* Inner container */
+.fps-monitor-inner {
+  background: var(--fps-bg);
+  backdrop-filter: blur(12px);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: var(--fps-border-radius);
+  overflow: hidden;
+  box-shadow: 
+    0 8px 32px rgba(0, 0, 0, 0.4),
+    inset 0 1px 0 rgba(255, 255, 255, 0.05);
+  min-width: calc(var(--fps-graph-width) + 20px);
+}
+
+.fps-monitor[data-collapsed="true"] .fps-monitor-inner {
+  min-width: auto;
+}
+
+/* Header */
+.fps-monitor-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 8px 12px;
+  cursor: pointer;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+  transition: background 0.15s;
+}
+
+.fps-monitor[data-collapsed="true"] .fps-monitor-header {
+  border-bottom: none;
+}
+
+.fps-monitor-header:hover {
+  background: rgba(255, 255, 255, 0.04);
+}
+
+.fps-monitor-left,
+.fps-monitor-right {
+  display: flex;
+  align-items: center;
+}
+
+.fps-monitor-left { gap: 8px; }
+.fps-monitor-right { gap: 10px; }
+
+/* Status dot */
+.fps-monitor-dot {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: var(--fps-current-color);
+  box-shadow: 0 0 6px var(--fps-current-color);
+}
+
+.fps-monitor[data-status="bad"] .fps-monitor-dot {
+  animation: fps-pulse 0.6s ease-in-out infinite alternate;
+}
+
+/* FPS display */
+.fps-monitor-fps {
+  font-weight: 700;
+  font-size: 13px;
+  letter-spacing: -0.02em;
+  color: var(--fps-current-color);
+}
+
+.fps-monitor-label {
+  color: #94a3b8;
+  font-size: 10px;
+  font-weight: 500;
+}
+
+.fps-monitor-ms {
+  color: #64748b;
+  font-size: 10px;
+}
+
+/* Arrow */
+.fps-monitor-arrow {
+  color: #64748b;
+  font-size: 9px;
+  display: inline-block;
+  transition: transform 0.2s;
+  transform: rotate(180deg);
+}
+
+.fps-monitor[data-collapsed="true"] .fps-monitor-arrow {
+  transform: rotate(0deg);
+}
+
+/* Expanded panel */
+.fps-monitor-expanded {
+  padding: 8px 10px 10px;
+}
+
+.fps-monitor[data-collapsed="true"] .fps-monitor-expanded {
+  display: none;
+}
+
+/* Canvas */
+.fps-monitor-canvas {
+  border-radius: 6px;
+  display: block;
+  width: var(--fps-graph-width);
+  height: var(--fps-graph-height);
+}
+
+/* Stats row */
+.fps-monitor-stats {
+  display: flex;
+  justify-content: space-between;
+  margin-top: 8px;
+  padding: 0 2px;
+}
+
+.fps-monitor-stat {
+  text-align: center;
+}
+
+.fps-monitor-stat-label {
+  font-size: 9px;
+  color: #475569;
+  font-weight: 600;
+  letter-spacing: 0.05em;
+}
+
+.fps-monitor-stat-value {
+  font-size: 12px;
+  font-weight: 700;
+  margin-top: 1px;
+}
+
+/* Stat colors via data attributes */
+.fps-monitor-stat[data-status="good"] .fps-monitor-stat-value { color: var(--fps-color-good); }
+.fps-monitor-stat[data-status="warn"] .fps-monitor-stat-value { color: var(--fps-color-warn); }
+.fps-monitor-stat[data-status="bad"] .fps-monitor-stat-value { color: var(--fps-color-bad); }
+.fps-monitor-stat[data-status="neutral"] .fps-monitor-stat-value { color: #94a3b8; }
+
+/* Legend */
+.fps-monitor-legend {
+  display: flex;
+  gap: 12px;
+  margin-top: 8px;
+  justify-content: center;
+}
+
+.fps-monitor-legend-item {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.fps-monitor-legend-dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 2px;
+}
+
+.fps-monitor-legend-dot[data-status="good"] { background: var(--fps-color-good); }
+.fps-monitor-legend-dot[data-status="warn"] { background: var(--fps-color-warn); }
+.fps-monitor-legend-dot[data-status="bad"] { background: var(--fps-color-bad); }
+
+.fps-monitor-legend-item span,
+.fps-monitor-legend-fps {
+  color: #64748b;
+  font-size: 9px;
+}
+
+.fps-monitor-legend-fps {
+  color: #475569;
+}
+
+/* Pulse animation */
+@keyframes fps-pulse {
+  from { opacity: 0.5; }
+  to { opacity: 1; }
+}

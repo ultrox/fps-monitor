@@ -12,6 +12,7 @@ Real-time FPS monitor with canvas visualization. Zero dependencies. Works anywhe
 - 🔄 Collapsible UI
 - 📍 Configurable position
 - 🎯 High-DPI canvas support
+- 🎛️ CSS variables for theming
 - 0️⃣ Zero dependencies
 - 💙 Full TypeScript support
 - 🌐 Framework-agnostic (vanilla JS)
@@ -29,56 +30,70 @@ Or just copy `src/FPSMonitor.ts` into your project.
 ```ts
 import { FPSMonitor } from 'fps-monitor';
 
-// Create and mount
+// Create and mount (CSS auto-injected)
 const monitor = new FPSMonitor();
 
 // With options
 const monitor = new FPSMonitor({
   position: 'bottom-left',  // 'top-right' | 'top-left' | 'bottom-right' | 'bottom-left'
-  collapsed: true           // start collapsed
+  collapsed: true,          // start collapsed
+  injectStyles: true        // auto-inject CSS (default: true)
 });
 
 // Control
-monitor.toggle();   // toggle collapsed state
-monitor.stop();     // pause monitoring
-monitor.start();    // resume monitoring
-monitor.destroy();  // remove from DOM
+monitor.toggle();      // toggle collapsed state
+monitor.collapsed = true;  // set directly
+monitor.stop();        // pause monitoring
+monitor.start();       // resume monitoring
+monitor.destroy();     // remove from DOM
 ```
 
-### Script tag
+## Customization
 
-```html
-<script type="module">
-  import { FPSMonitor } from 'https://unpkg.com/fps-monitor/dist/index.js';
-  new FPSMonitor();
-</script>
-```
+### CSS Variables
 
-### Dev-only usage
+Override these on `.fps-monitor` or `:root`:
 
-```ts
-if (import.meta.env.DEV) {
-  new FPSMonitor();
+```css
+.fps-monitor {
+  --fps-color-good: #22c55e;    /* ≥55 fps */
+  --fps-color-warn: #eab308;    /* 30-55 fps */
+  --fps-color-bad: #ef4444;     /* <30 fps */
+  --fps-graph-width: 280px;
+  --fps-graph-height: 80px;
+  --fps-font-family: 'JetBrains Mono', monospace;
+  --fps-bg: rgba(15, 23, 42, 0.92);
+  --fps-border-radius: 10px;
 }
 ```
 
-### Keyboard toggle
+### Custom CSS
+
+Use your own styles by disabling auto-injection:
 
 ```ts
 import { FPSMonitor } from 'fps-monitor';
+import './my-fps-styles.css';
 
-let monitor: FPSMonitor | null = null;
+new FPSMonitor({ injectStyles: false });
+```
 
-document.addEventListener('keydown', (e) => {
-  if (e.key === 'F' && e.shiftKey) {
-    if (monitor) {
-      monitor.destroy();
-      monitor = null;
-    } else {
-      monitor = new FPSMonitor();
-    }
-  }
-});
+### Data Attributes
+
+The component uses data attributes for state, making CSS targeting easy:
+
+```css
+/* Target by position */
+.fps-monitor[data-position="bottom-left"] { /* ... */ }
+
+/* Target by status */
+.fps-monitor[data-status="bad"] { /* ... */ }
+
+/* Target when collapsed */
+.fps-monitor[data-collapsed="true"] { /* ... */ }
+
+/* Stat items */
+.fps-monitor-stat[data-status="good"] { /* ... */ }
 ```
 
 ## API
@@ -93,6 +108,13 @@ Creates and mounts the FPS monitor.
 |--------|------|---------|-------------|
 | `position` | `'top-right' \| 'top-left' \| 'bottom-right' \| 'bottom-left'` | `'top-right'` | Screen position |
 | `collapsed` | `boolean` | `false` | Start collapsed |
+| `injectStyles` | `boolean` | `true` | Auto-inject CSS |
+
+### Properties
+
+| Property | Type | Description |
+|----------|------|-------------|
+| `collapsed` | `boolean` | Get/set collapsed state |
 
 ### Methods
 
@@ -109,15 +131,8 @@ Creates and mounts the FPS monitor.
 - Stores last 120 frame deltas in a ring buffer
 - Calculates rolling average from last 20 frames
 - Renders to canvas for minimal overhead
-- Skips graph updates when collapsed
-
-## Color thresholds
-
-| FPS | Frame time | Color |
-|-----|------------|-------|
-| ≥55 | ≤18ms | 🟢 Green |
-| 30-55 | 18-33ms | 🟡 Yellow |
-| <30 | >33ms | 🔴 Red |
+- Uses CSS variables for colors (reads at render time)
+- Data attributes drive all visual state changes
 
 ## License
 
