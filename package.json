@@ -1,0 +1,44 @@
+{
+  "name": "fps-monitor",
+  "version": "1.0.0",
+  "description": "Real-time FPS monitor with canvas visualization. Zero dependencies.",
+  "type": "module",
+  "main": "dist/index.js",
+  "module": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "exports": {
+    ".": {
+      "import": "./dist/index.js",
+      "types": "./dist/index.d.ts"
+    }
+  },
+  "files": [
+    "dist",
+    "src"
+  ],
+  "scripts": {
+    "build": "tsdown src/index.ts --dts",
+    "dev": "tsdown src/index.ts --dts --watch",
+    "prepublishOnly": "npm run build"
+  },
+  "keywords": [
+    "fps",
+    "monitor",
+    "performance",
+    "debug",
+    "profiler",
+    "frame-rate",
+    "typescript",
+    "vanilla"
+  ],
+  "author": "Marko Vujanic",
+  "license": "MIT",
+  "devDependencies": {
+    "tsdown": "^0.3.0",
+    "typescript": "^5.0.0"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/ultrox/fps-monitor"
+  }
+}
